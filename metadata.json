@@ -1,0 +1,6 @@
+{
+  "name": "قارلۇق ئۆگىنىش ياردەمچىسى",
+  "description": "سۇئال-جاۋاب JSON ھۆججەتلىرى ئارقىلىق بىلىم ئۆگىنىشكە ياردەم بېرىدىغان، نۆل ئىز قوغلايدىغان مەخپىيەتلىك ئاساسىدىكى Chrome Manifest V3 قىستۇرمىسى ۋە لايىھە سۇپىسى.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

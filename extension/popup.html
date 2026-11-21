@@ -1,0 +1,1668 @@
+<!doctype html>
+<html lang="ug" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>قارلۇق ئۆگىنىش ياردەمچىسى</title>
+    <style>
+      :root {
+        --bg-canvas: #E4E7EC;
+        --bg-surface: #EEF0F4;
+        --glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.72) 0%, rgba(235, 241, 248, 0.46) 100%);
+        --glass-pill-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(238, 243, 250, 0.48) 100%);
+        --glass-inset: rgba(255, 255, 255, 0.62);
+        --glass-border: rgba(255, 255, 255, 0.84);
+        --text-primary: #1A1E24;
+        --text-secondary: #555D6B;
+        --primary-grad: linear-gradient(180deg, #F78C2B 0%, #F05A28 60%, #DC4416 100%);
+        --primary: #F05A28;
+        --accent-blue: #1F75FE;
+        --success: #1FA982;
+        --danger: #E03E36;
+        --shadow-glass:
+          0 10px 24px -6px rgba(26, 30, 36, 0.13),
+          0 4px 12px -2px rgba(130, 190, 255, 0.22),
+          inset 0 2px 3px rgba(255, 255, 255, 0.92),
+          inset 0 -2px 4px rgba(160, 175, 200, 0.25);
+        --shadow-primary:
+          0 12px 24px -6px rgba(240, 90, 40, 0.42),
+          0 4px 10px -2px rgba(247, 140, 43, 0.30),
+          inset 0 2px 4px rgba(255, 255, 255, 0.72),
+          inset 0 -2px 5px rgba(175, 45, 10, 0.35);
+        --shadow-success:
+          0 8px 18px -5px rgba(31, 169, 130, 0.38),
+          inset 0 2px 3px rgba(255, 255, 255, 0.65);
+        --divider: rgba(26, 30, 36, 0.08);
+      }
+
+      html.dark {
+        --bg-canvas: #0E131B;
+        --bg-surface: #151C28;
+        --glass-bg: linear-gradient(145deg, rgba(30, 39, 54, 0.78) 0%, rgba(20, 27, 38, 0.62) 100%);
+        --glass-pill-bg: linear-gradient(180deg, rgba(38, 49, 66, 0.82) 0%, rgba(24, 32, 44, 0.68) 100%);
+        --glass-inset: rgba(15, 20, 28, 0.64);
+        --glass-border: rgba(255, 255, 255, 0.16);
+        --text-primary: #F1F5F9;
+        --text-secondary: #9CA7B8;
+        --shadow-glass:
+          0 12px 28px -6px rgba(0, 0, 0, 0.55),
+          0 4px 12px -2px rgba(31, 117, 254, 0.12),
+          inset 0 1px 2px rgba(255, 255, 255, 0.16),
+          inset 0 -2px 4px rgba(0, 0, 0, 0.35);
+        --divider: rgba(255, 255, 255, 0.10);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        letter-spacing: 0;
+      }
+
+      body {
+        width: 376px;
+        min-height: 556px;
+        max-height: 600px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        direction: rtl;
+        font-family: 'UKIJ Tuz', 'ALKATIP Basma', 'Uyghur Pashto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--text-primary);
+        background:
+          radial-gradient(circle at 85% 8%, rgba(247, 140, 43, 0.14), transparent 42%),
+          radial-gradient(circle at 12% 90%, rgba(31, 117, 254, 0.14), transparent 45%),
+          var(--bg-canvas);
+        padding: 12px;
+        transition: background-color 240ms cubic-bezier(0.22, 1, 0.36, 1), color 240ms ease;
+      }
+
+      .app-shell {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* Top Header: Right = Logo, Left = Tool Name */
+      .top-header {
+        display: grid;
+        grid-template-columns: 54px 1fr;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .logo-box {
+        width: 54px;
+        height: 54px;
+        border-radius: 18px;
+        background: var(--primary-grad);
+        border: 1.5px solid rgba(255, 232, 210, 0.72);
+        box-shadow: var(--shadow-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
+        color: #FFFFFF;
+        font-weight: 700;
+      }
+
+      .logo-label-wide {
+        display: none;
+        font-size: 16px;
+      }
+
+      .rail-text {
+        display: none;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .header-expand-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 11px;
+        background: var(--glass-pill-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: transform 160ms ease, border-color 160ms ease;
+      }
+
+      .header-expand-btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--accent-blue);
+      }
+
+      .logo-box::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      .title-capsule {
+        min-height: 54px;
+        padding-block: 8px;
+        padding-inline: 16px;
+        border-radius: 20px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border: 1.5px solid var(--glass-border);
+        box-shadow: var(--shadow-glass);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .brand-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1.35;
+      }
+
+      .brand-sub {
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Main 2-column Workspace matching wireframe */
+      .workspace-grid {
+        display: grid;
+        grid-template-columns: 54px 1fr;
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      /* Right Vertical Settings Rail (تەڭشەك) */
+      .settings-rail {
+        border-radius: 22px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border: 1.5px solid var(--glass-border);
+        box-shadow: var(--shadow-glass);
+        padding-block: 12px;
+        padding-inline: 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .rail-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-align: center;
+        line-height: 1.3;
+      }
+
+      .rail-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .rail-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        background: var(--glass-pill-bg);
+        border: 1.5px solid var(--glass-border);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.7);
+        color: var(--text-primary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms ease;
+      }
+
+      .rail-btn:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent-blue);
+      }
+
+      .rail-btn:active {
+        transform: scale(0.95);
+      }
+
+      .rail-btn.active-indicator {
+        border-color: var(--success);
+        color: var(--success);
+      }
+
+      .mini-count {
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        min-width: 17px;
+        height: 17px;
+        padding-inline: 4px;
+        border-radius: 9999px;
+        background: var(--primary);
+        color: #FFFFFF;
+        font-size: 10px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Vertical Liquid Glass Switch */
+      .toggle-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .toggle-pill {
+        width: 40px;
+        height: 24px;
+        border-radius: 9999px;
+        background: rgba(120, 132, 150, 0.35);
+        border: 1.5px solid var(--glass-border);
+        position: relative;
+        cursor: pointer;
+        transition: background 240ms cubic-bezier(0.34, 1.45, 0.64, 1), box-shadow 240ms ease;
+        padding: 0;
+      }
+
+      .toggle-pill[aria-checked="true"] {
+        background: linear-gradient(180deg, #27C497 0%, #1FA982 100%);
+        box-shadow: var(--shadow-success);
+      }
+
+      .toggle-knob {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 17px;
+        height: 17px;
+        border-radius: 9999px;
+        background: #FFFFFF;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+        transition: transform 240ms cubic-bezier(0.34, 1.45, 0.64, 1);
+      }
+
+      .toggle-pill[aria-checked="true"] .toggle-knob {
+        transform: translateX(-16px);
+      }
+
+      .toggle-caption {
+        font-size: 10px;
+        color: var(--text-secondary);
+        text-align: center;
+      }
+
+      /* Left Main Content Column */
+      .main-column {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      /* Study / Reminders Card (ئەسكەرتىملەر) */
+      .glass-card {
+        border-radius: 22px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border: 1.5px solid var(--glass-border);
+        box-shadow: var(--shadow-glass);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .card-top-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .card-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+
+      .progress-meta {
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      .book-select {
+        width: 100%;
+        padding-block: 7px;
+        padding-inline: 12px;
+        border-radius: 14px;
+        background: var(--glass-inset);
+        border: 1.5px solid var(--glass-border);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 180ms ease;
+      }
+
+      .book-select:focus {
+        border-color: var(--accent-blue);
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 5px;
+        border-radius: 9999px;
+        background: var(--divider);
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 9999px;
+        background: linear-gradient(90deg, #F05A28, #F78C2B);
+        transition: width 280ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .qa-surface {
+        background: var(--glass-inset);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .qa-category {
+        font-size: 11px;
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      /* Uyghur Typography Rule: justified + 2-char first-line indent */
+      .uyghur-paragraph {
+        text-align: justify;
+        text-justify: inter-word;
+        text-indent: 1.75em;
+        line-height: 1.75;
+        font-size: 14px;
+        color: var(--text-primary);
+        word-break: break-word;
+      }
+
+      .answer-panel {
+        border-top: 1px solid var(--divider);
+        padding-top: 8px;
+        display: none;
+      }
+
+      .answer-panel.visible {
+        display: block;
+      }
+
+      .answer-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--success);
+        margin-bottom: 4px;
+      }
+
+      .qa-controls {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 6px;
+        align-items: center;
+      }
+
+      /* Buttons */
+      .btn-glass {
+        padding-block: 8px;
+        padding-inline: 12px;
+        border-radius: 9999px;
+        background: var(--glass-pill-bg);
+        border: 1.5px solid var(--glass-border);
+        box-shadow: 0 6px 14px -4px rgba(26, 30, 36, 0.14), inset 0 1px 2px rgba(255, 255, 255, 0.85);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 160ms ease, border-color 160ms ease;
+      }
+
+      .btn-glass:hover {
+        transform: translateY(-1.5px);
+        border-color: var(--accent-blue);
+      }
+
+      .btn-glass:active {
+        transform: scale(0.97);
+      }
+
+      .btn-glass.mastered {
+        background: linear-gradient(180deg, #27C497 0%, #1FA982 100%);
+        color: #FFFFFF;
+        border-color: rgba(255, 255, 255, 0.65);
+        box-shadow: var(--shadow-success);
+      }
+
+      .btn-reveal {
+        width: 100%;
+        padding-block: 8px;
+        padding-inline: 14px;
+        border-radius: 9999px;
+        background: linear-gradient(180deg, rgba(31, 117, 254, 0.14) 0%, rgba(31, 117, 254, 0.06) 100%);
+        border: 1.5px solid rgba(31, 117, 254, 0.35);
+        color: var(--accent-blue);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 160ms ease, background 160ms ease;
+      }
+
+      html.dark .btn-reveal {
+        color: #7DB2FF;
+        border-color: rgba(125, 178, 255, 0.35);
+      }
+
+      .btn-reveal:hover {
+        transform: translateY(-1px);
+      }
+
+      .dual-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .action-pill-lg {
+        min-height: 48px;
+        padding-block: 10px;
+        padding-inline: 12px;
+        border-radius: 22px;
+      }
+
+      .btn-primary-cta {
+        width: 100%;
+        min-height: 48px;
+        padding-block: 11px;
+        padding-inline: 18px;
+        border-radius: 9999px;
+        background: var(--primary-grad);
+        border: 1.5px solid rgba(255, 225, 200, 0.72);
+        box-shadow: var(--shadow-primary);
+        color: #FFFFFF;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        position: relative;
+        overflow: hidden;
+        transition: transform 160ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 160ms ease;
+      }
+
+      .btn-primary-cta::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 10%;
+        right: 10%;
+        height: 45%;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent);
+        border-radius: 9999px;
+        pointer-events: none;
+      }
+
+      .btn-primary-cta:hover {
+        transform: translateY(-2px);
+      }
+
+      .btn-primary-cta:active {
+        transform: scale(0.97);
+      }
+
+      .btn-danger {
+        color: var(--danger);
+        border-color: rgba(224, 62, 54, 0.35);
+      }
+
+      /* Modals */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(14, 19, 27, 0.48);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        z-index: 40;
+      }
+
+      .modal-backdrop.open {
+        display: flex;
+      }
+
+      .modal-sheet {
+        width: 100%;
+        max-height: 540px;
+        overflow-y: auto;
+        border-radius: 22px;
+        background: var(--bg-surface);
+        border: 1.5px solid var(--glass-border);
+        box-shadow: var(--shadow-glass);
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .modal-title {
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .icon-close {
+        width: 30px;
+        height: 30px;
+        border-radius: 9999px;
+        background: var(--glass-inset);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .field-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+      }
+
+      .text-input,
+      .json-textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: var(--glass-inset);
+        border: 1.5px solid var(--glass-border);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+      }
+
+      .json-textarea {
+        min-height: 130px;
+        resize: vertical;
+        line-height: 1.6;
+      }
+
+      .text-input:focus,
+      .json-textarea:focus {
+        border-color: var(--accent-blue);
+      }
+
+      .file-upload-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        border: 1.5px dashed rgba(31, 117, 254, 0.45);
+        background: rgba(31, 117, 254, 0.06);
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .file-upload-input {
+        display: none;
+      }
+
+      .book-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .book-item {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: var(--glass-inset);
+        border: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .book-item-info {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .book-item-title {
+        font-size: 13px;
+        font-weight: 700;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .book-item-meta {
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .book-item-actions {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      /* Toast */
+      .toast-bar {
+        position: fixed;
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        padding: 10px 14px;
+        border-radius: 9999px;
+        background: var(--bg-surface);
+        border: 1.5px solid var(--glass-border);
+        box-shadow: var(--shadow-glass);
+        font-size: 12px;
+        font-weight: 600;
+        text-align: center;
+        z-index: 60;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition: opacity 200ms ease, transform 200ms ease;
+      }
+
+      .toast-bar.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .toast-bar.success {
+        border-color: var(--success);
+        color: var(--success);
+      }
+
+      .toast-bar.error {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 16px 8px;
+        color: var(--text-secondary);
+        font-size: 13px;
+      }
+
+      .mode-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        padding: 4px;
+        border-radius: 16px;
+        background: var(--glass-inset);
+        border: 1px solid var(--glass-border);
+      }
+
+      .mode-tab-btn {
+        padding: 7px 10px;
+        border-radius: 12px;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 180ms ease, color 180ms ease;
+      }
+
+      .mode-tab-btn.active {
+        background: var(--primary-grad);
+        color: #FFFFFF;
+        box-shadow: 0 4px 10px rgba(240, 90, 40, 0.28);
+      }
+
+      .tab-pane {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .tab-pane.active {
+        display: flex;
+      }
+
+      /* Brightness Slider & Rail Control */
+      .brightness-rail-card {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px 10px;
+        border-radius: 14px;
+        background: var(--glass-pill-bg);
+        border: 1px solid var(--glass-border);
+      }
+
+      .brightness-rail-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+
+      .brightness-pct-badge {
+        color: var(--primary);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .brightness-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .brightness-step-btn {
+        width: 24px;
+        height: 24px;
+        border-radius: 9999px;
+        border: 1px solid var(--glass-border);
+        background: var(--glass-inset);
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .brightness-range {
+        width: 100%;
+        min-width: 0;
+        accent-color: #F05A28;
+        cursor: pointer;
+      }
+
+      .brightness-mini-badge {
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        padding-inline: 4px;
+        height: 16px;
+        border-radius: 9999px;
+        background: var(--accent-blue);
+        color: #FFFFFF;
+        font-size: 9px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Full-screen / Expanded Browser Tab Responsive Layout (Synchronized Header + Rail + Main) */
+      @media (min-width: 520px) {
+        body {
+          width: 100%;
+          max-width: 1120px;
+          min-height: 100vh;
+          max-height: none;
+          margin: 0 auto;
+          padding: 24px;
+        }
+
+        .app-shell {
+          min-height: calc(100vh - 48px);
+          gap: 16px;
+        }
+
+        .top-header {
+          grid-template-columns: 200px 1fr;
+          gap: 16px;
+        }
+
+        .logo-box {
+          width: 100%;
+          height: 68px;
+          border-radius: 22px;
+          padding-inline: 16px;
+        }
+
+        .logo-label-wide {
+          display: inline;
+        }
+
+        .title-capsule {
+          min-height: 68px;
+          padding-inline: 24px;
+          border-radius: 22px;
+        }
+
+        .brand-title {
+          font-size: 20px;
+        }
+
+        .brand-sub {
+          font-size: 13px;
+        }
+
+        .header-expand-btn {
+          display: none;
+        }
+
+        .workspace-grid {
+          grid-template-columns: 200px 1fr;
+          gap: 16px;
+          flex: 1;
+        }
+
+        .settings-rail {
+          padding: 18px 14px;
+          align-items: stretch;
+          gap: 14px;
+        }
+
+        .rail-label {
+          font-size: 14px;
+          text-align: right;
+          padding-inline: 6px;
+          padding-bottom: 6px;
+          border-bottom: 1px solid var(--divider);
+        }
+
+        .rail-controls {
+          align-items: stretch;
+          gap: 10px;
+        }
+
+        .toggle-wrap {
+          flex-direction: row;
+          justify-content: space-between;
+          padding: 8px 10px;
+          border-radius: 14px;
+          background: var(--glass-pill-bg);
+          border: 1px solid var(--glass-border);
+        }
+
+        .toggle-caption {
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .rail-btn {
+          width: 100%;
+          height: 44px;
+          justify-content: flex-start;
+          gap: 10px;
+          padding-inline: 12px;
+        }
+
+        .rail-text {
+          display: inline;
+        }
+
+        .brightness-rail-card {
+          display: flex;
+        }
+
+        #railBrightnessQuickBtn {
+          display: none;
+        }
+
+        .mini-count {
+          position: static;
+          margin-right: auto;
+        }
+
+        .main-column {
+          gap: 16px;
+        }
+
+        .glass-card {
+          padding: 22px 24px;
+          gap: 14px;
+        }
+
+        .card-title {
+          font-size: 18px;
+        }
+
+        .qa-surface {
+          padding: 18px 20px;
+          gap: 12px;
+        }
+
+        .uyghur-paragraph {
+          font-size: 16px;
+          line-height: 1.85;
+        }
+
+        .modal-sheet {
+          max-width: 640px;
+          max-height: 85vh;
+          padding: 22px;
+        }
+      }
+
+      /* Print / Save-as-PDF Styles */
+      .print-sheet {
+        display: none;
+      }
+
+      .print-toolbar {
+        display: none;
+      }
+
+      body.print-mode .app-shell,
+      body.print-mode .modal-backdrop,
+      body.print-mode .toast-bar {
+        display: none !important;
+      }
+
+      body.print-mode .print-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+        padding: 12px 18px;
+        border-radius: 18px;
+        background: var(--glass-bg);
+        border: 1.5px solid var(--glass-border);
+      }
+
+      body.print-mode .print-sheet {
+        display: block;
+        background: #FFFFFF;
+        color: #1A1E24;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+
+      .print-sheet-header {
+        border-bottom: 2px solid #F05A28;
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+      }
+
+      .print-sheet-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1A1E24;
+        margin-bottom: 4px;
+      }
+
+      .print-sheet-meta {
+        font-size: 13px;
+        color: #555D6B;
+      }
+
+      .print-qa-card {
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      .print-qa-head {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        font-weight: 700;
+        color: #F05A28;
+        margin-bottom: 6px;
+      }
+
+      .print-qa-q {
+        font-size: 14.5px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #1A1E24;
+      }
+
+      .print-qa-a {
+        font-size: 13.5px;
+        color: #2D3748;
+      }
+
+      .pdf-status-note {
+        border-radius: 12px;
+        border: 1px solid rgba(31, 117, 254, 0.28);
+        background: rgba(31, 117, 254, 0.09);
+        color: var(--accent-blue);
+        padding: 7px 10px;
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+
+      html.dark .pdf-status-note {
+        color: #7DB2FF;
+      }
+
+      .pdf-controls-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 7px 10px;
+        border-radius: 12px;
+        background: var(--glass-inset);
+        border: 1px solid var(--glass-border);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .page-num-input {
+        width: 54px;
+        padding: 4px 6px;
+        border-radius: 9px;
+        border: 1px solid var(--glass-border);
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .quiz-write-lines {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .quiz-write-line {
+        height: 18px;
+        border-bottom: 1px dashed #94A3B8;
+      }
+
+      .print-answer-key {
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 2px solid #1F75FE;
+        break-before: page;
+        page-break-before: always;
+      }
+
+      .print-answer-key h2 {
+        font-size: 17px;
+        margin-bottom: 12px;
+        color: #1A1E24;
+      }
+
+      .print-key-row {
+        font-size: 13px;
+        margin-bottom: 8px;
+        color: #2D3748;
+      }
+
+      @media print {
+        @page {
+          size: A4;
+          margin: 14mm;
+        }
+        html,
+        body {
+          filter: none !important;
+          width: auto !important;
+          max-width: none !important;
+          min-height: auto !important;
+          max-height: none !important;
+          background: #FFFFFF !important;
+          padding: 0 !important;
+        }
+        .app-shell,
+        .modal-backdrop,
+        .toast-bar,
+        .print-toolbar {
+          display: none !important;
+        }
+        .print-sheet {
+          display: block !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+        }
+      }
+
+      .lang-toggle-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        padding: 4px;
+        border-radius: 14px;
+        background: var(--glass-inset);
+        border: 1px solid var(--glass-border);
+      }
+
+      .lang-pill-btn {
+        padding: 6px 10px;
+        border-radius: 10px;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 180ms ease, color 180ms ease;
+      }
+
+      .lang-pill-btn.active {
+        background: var(--primary-grad);
+        color: #FFFFFF;
+        box-shadow: 0 3px 8px rgba(240, 90, 40, 0.25);
+      }
+
+      .prompt-action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .prompt-divider {
+        border-top: 1px solid var(--divider);
+        padding-top: 10px;
+        margin-top: 2px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <!-- Header: Right = Logo, Left = Tool Name -->
+      <header class="top-header">
+        <div class="logo-box" aria-label="قارلۇق لوگوسى">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <path d="M15.5 4.5C10.5 4.5 6.5 8.5 6.5 14C6.5 19.5 10.5 23.5 15.5 23.5C12.8 21.8 11.2 18.2 11.2 14C11.2 9.8 12.8 6.2 15.5 4.5Z" fill="#FFFFFF"/>
+            <path d="M17 9.5C18.8 9.5 20.5 10.2 21.8 11.2V19.2C20.5 18.3 18.8 17.8 17 17.8C15.8 17.8 14.8 18.1 14 18.6V10.6C14.8 10 15.8 9.5 17 9.5Z" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+          <span class="logo-label-wide" id="logoWideLabel">قارلۇق</span>
+        </div>
+        <div class="title-capsule">
+          <div>
+            <h1 class="brand-title" id="brandMainTitle">قارلۇق ئۆگىنىش ياردەمچىسى</h1>
+            <div class="brand-sub" id="headerBooksSummary">0 كىتاب ساقلاندى</div>
+          </div>
+          <button
+            type="button"
+            class="header-expand-btn"
+            id="headerOpenTabBtn"
+            aria-label="چوڭ ئېكراندا ئېچىش"
+            title="چوڭ ئېكراندا ئېچىش"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <polyline points="9 21 3 21 3 15"></polyline>
+              <line x1="21" y1="3" x2="14" y2="10"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Workspace Grid: Right = Settings Rail, Left = Main Column -->
+      <main class="workspace-grid">
+        <aside class="settings-rail" aria-label="تەڭشەك بالدىقى">
+          <div class="rail-label" id="railSettingsLabel">تەڭشەك</div>
+
+          <div class="rail-controls">
+            <div class="toggle-wrap">
+              <button
+                type="button"
+                class="toggle-pill"
+                id="startupReminderToggle"
+                role="switch"
+                aria-checked="true"
+                aria-label="تور كۆرگۈچ ئېچىلغاندا ئەسكەرتىش"
+                title="تور كۆرگۈچ ئېچىلغاندا ئەسكەرتىش"
+              >
+                <span class="toggle-knob"></span>
+              </button>
+              <span class="toggle-caption" id="reminderStateLabel">ئوچۇق</span>
+            </div>
+
+            <button
+              type="button"
+              class="rail-btn"
+              id="themeToggleBtn"
+              aria-label="قاراڭغۇ ياكى يورۇق ھالەت"
+              title="قاراڭغۇ / يورۇق ھالەت"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+              <span class="rail-text" id="railThemeLabel">كۈندۈز / تۈن</span>
+            </button>
+
+            <button
+              type="button"
+              class="rail-btn"
+              id="railLanguageBtn"
+              aria-label="تىلنى ئالماشتۇرۇش / تغيير اللغة"
+              title="ئۇيغۇرچە / العربية"
+            >
+              <span style="font-size:11px;font-weight:800;" id="railLanguageShort">ع/ئۇ</span>
+              <span class="rail-text" id="railLanguageLabel">تىل: ئۇيغۇرچە</span>
+            </button>
+
+            <button
+              type="button"
+              class="rail-btn"
+              id="railBrightnessQuickBtn"
+              aria-label="ئېكران يورۇقلۇقىنى تەڭشەش"
+              title="يورۇقلۇق تەڭشىكى"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="5"></circle>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+              </svg>
+              <span class="brightness-mini-badge" id="railBrightnessMiniBadge">100%</span>
+            </button>
+
+            <div class="brightness-rail-card" aria-label="يورۇقلۇق تەڭشىكى">
+              <div class="brightness-rail-top">
+                <span id="railBrightnessTitle">يورۇقلۇق</span>
+                <span class="brightness-pct-badge" id="railBrightnessValue">100%</span>
+              </div>
+              <div class="brightness-row">
+                <button type="button" class="brightness-step-btn" id="railBrightnessDecBtn" aria-label="يورۇقلۇقنى پەسەيتىش">-</button>
+                <input type="range" min="50" max="130" step="5" value="100" class="brightness-range" id="railBrightnessRange" aria-label="يورۇقلۇق سىيرىلمىسى" />
+                <button type="button" class="brightness-step-btn" id="railBrightnessIncBtn" aria-label="يورۇقلۇقنى ئاشۇرۇش">+</button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="rail-btn"
+              id="booksLibraryBtn"
+              aria-label="بارلىق كىتابلار تىزىملىكى"
+              title="كىتاپلار"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path>
+              </svg>
+              <span class="rail-text" id="railBooksLabel">كىتابلار</span>
+              <span class="mini-count" id="booksCountBadge">0</span>
+            </button>
+          </div>
+
+          <button
+            type="button"
+            class="rail-btn"
+            id="openSettingsModalBtn"
+            aria-label="تەپسىلىي تەڭشەكلەر"
+            title="تەڭشەك تەپسىلاتى"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.79 1.03 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span class="rail-text" id="railDetailSettingsLabel">تەڭشەك</span>
+          </button>
+        </aside>
+
+        <section class="main-column">
+          <!-- Reminders / Learning Card (ئەسكەرتىملەر) -->
+          <article class="glass-card" aria-label="ئەسكەرتىملەر">
+            <div class="card-top-row">
+              <h2 class="card-title" id="remindersCardTitle">ئەسكەرتىملەر</h2>
+              <span class="progress-meta" id="qaProgressText">0 / 0</span>
+            </div>
+
+            <select id="bookSelector" class="book-select" aria-label="كىتاب تاللاش"></select>
+
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-fill" id="progressBarFill"></div>
+            </div>
+
+            <div class="qa-surface" id="qaContainer">
+              <div class="qa-category" id="qaCategoryText"></div>
+              <p class="uyghur-paragraph" id="qaQuestionText">تېخى كىتاب يۈكلەنمىدى.</p>
+
+              <button type="button" class="btn-reveal" id="toggleAnswerBtn">جاۋابنى كۆرۈش</button>
+
+              <div class="answer-panel" id="answerPanel">
+                <div class="answer-label" id="answerLabelText">جاۋاب:</div>
+                <p class="uyghur-paragraph" id="qaAnswerText"></p>
+              </div>
+            </div>
+
+            <div class="qa-controls">
+              <button type="button" class="btn-glass" id="prevQuestionBtn">ئالدىنقى</button>
+              <button type="button" class="btn-glass" id="masterQuestionBtn">ئۆگەندىم</button>
+              <button type="button" class="btn-glass" id="nextQuestionBtn">كېيىنكى</button>
+            </div>
+          </article>
+
+          <!-- Dual Buttons: Add Book / Export Book -->
+          <div class="dual-actions">
+            <button type="button" class="btn-glass action-pill-lg" id="openAddBookBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+              <span id="openAddBookLabel">كىتاپ قوشۇش</span>
+            </button>
+
+            <button type="button" class="btn-glass action-pill-lg" id="openExportBookBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span id="openExportBookLabel">كىتاپ چىقىرىش</span>
+            </button>
+          </div>
+
+          <!-- Primary Bottom CTA: AI Prompt Generator -->
+          <button type="button" class="btn-primary-cta" id="preparePromptBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span id="preparePromptLabel">ئىئاي ئۈچۈن پىرۇمپىت تەييارلاش (JSON)</span>
+          </button>
+        </section>
+      </main>
+    </div>
+
+    <!-- Modal 1: Add Book (Auto Text/PDF Generator + JSON Upload) -->
+    <div class="modal-backdrop" id="addBookModal" role="dialog" aria-modal="true" aria-labelledby="addBookModalTitle">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3 class="modal-title" id="addBookModalTitle">كىتاپ قوشۇش (PDF / تېكىست / JSON)</h3>
+          <button type="button" class="icon-close" data-close-modal="addBookModal" aria-label="تاقاش">×</button>
+        </div>
+
+        <div>
+          <label class="field-label" id="customBookTitleLabel" for="customBookTitleInput">كىتاب ياكى بىلىم نامى (ئىختىيارىي)</label>
+          <input type="text" id="customBookTitleInput" class="text-input" placeholder="مەسىلەن: شەرقىي تۈركىستان تارىخى" />
+        </div>
+
+        <div class="mode-tabs" role="tablist">
+          <button type="button" class="mode-tab-btn active" id="tabAutoBtn" data-add-tab="auto">PDF / تېكىستتىن ياساش</button>
+          <button type="button" class="mode-tab-btn" id="tabJsonBtn" data-add-tab="json">JSON يۈكلەش</button>
+        </div>
+
+        <div class="tab-pane active" id="addTabAuto">
+          <label class="file-upload-box" id="pdfTextDropZone" for="pdfTextFileInput">
+            <span id="pdfDropLabelText">.pdf ياكى .txt ھۆججەت تاللاش (تور سىرتىدا بىۋاسىتە)</span>
+            <span style="font-weight:700;color:var(--accent-blue);white-space:nowrap;">PDF / تېكىست</span>
+            <input type="file" id="pdfTextFileInput" class="file-upload-input" accept=".pdf,.txt,.md,application/pdf,text/plain" />
+          </label>
+
+          <div class="pdf-status-note" id="pdfStatusNote" style="display:none;"></div>
+
+          <div class="pdf-controls-row" id="pdfPageRangeBox" style="display:none;">
+            <span id="pdfPageRangeLabel">بەت دائىرىسى:</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <input type="number" id="pdfFromPageInput" class="page-num-input" min="1" value="1" aria-label="باشلىنىش بېتى" />
+              <span>—</span>
+              <input type="number" id="pdfToPageInput" class="page-num-input" min="1" value="1" aria-label="ئاخىرلىشىش بېتى" />
+            </div>
+          </div>
+
+          <div class="pdf-controls-row">
+            <label for="qaCountSelect" id="qaCountLabel">تۈزۈلىدىغان سۇئال سانى:</label>
+            <select id="qaCountSelect" class="book-select" style="width:auto;padding-block:4px;" aria-label="سۇئال سانى">
+              <option value="10">10 سۇئال</option>
+              <option value="20">20 سۇئال</option>
+              <option value="30" selected>30 سۇئال</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="field-label" id="rawStudyTextLabel" for="rawStudyTextArea">ياكى كىتاب / دەرسلىك تېكىستىنى چاپلاڭ (تور سىرتىدا ئۆزى سۇئال-جاۋاب تۈزىدۇ):</label>
+            <textarea id="rawStudyTextArea" class="json-textarea" placeholder="بۇ يەرگە دەرسلىك تېكىستى، باب مەزمۇنى ياكى سۇئال: / جاۋاب: شەكلىدىكى خاتىرىنى چاپلاڭ..."></textarea>
+          </div>
+
+          <button type="button" class="btn-primary-cta" id="generateLocalBookBtn">ئاپتوماتىك سۇئال-جاۋاب ياساش ۋە ساقلاش</button>
+        </div>
+
+        <div class="tab-pane" id="addTabJson">
+          <label class="file-upload-box" id="jsonDropZone" for="jsonFileInput">
+            <span id="jsonUploadBoxLabel">.json ھۆججىتىنى بۇ يەرگە سۆرەپ تاشلاڭ ياكى تاللاڭ</span>
+            <span style="font-weight:700;color:var(--accent-blue);white-space:nowrap;">JSON</span>
+            <input type="file" id="jsonFileInput" class="file-upload-input" accept=".json,application/json,text/plain" />
+          </label>
+
+          <div>
+            <label class="field-label" id="jsonPasteLabel" for="jsonPasteArea">ياكى نۇرمال JSON مەزمۇنىنى بۇ يەرگە چاپلاڭ:</label>
+            <textarea id="jsonPasteArea" dir="ltr" class="json-textarea" placeholder='{"bookTitle":"كىتاب نامى","items":[{"id":1,"question":"...","answer":"..."}]}'></textarea>
+          </div>
+
+          <button type="button" class="btn-primary-cta" id="saveBookJsonBtn">JSON نى ساقلاش ۋە كىتاب قوشۇش</button>
+        </div>
+
+        <button type="button" class="btn-glass" id="openInTabBtn" style="font-size:12px;">
+          چوڭ بەتتە ئېچىش (ھۆججەت يۈكلەش ۋە كەڭ ئوقۇش ئۈچۈن)
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal 2: Export / Manage Books -->
+    <div class="modal-backdrop" id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3 class="modal-title" id="exportModalTitle">كىتاپ چىقىرىش (JSON / PDF) ۋە باشقۇرۇش</h3>
+          <button type="button" class="icon-close" data-close-modal="exportModal" aria-label="تاقاش">×</button>
+        </div>
+        <p class="uyghur-paragraph" id="exportModalDesc" style="font-size:12.5px;color:var(--text-secondary);">
+          ھەر بىر كىتاب ئايرىم ساقلانغان بولۇپ، بىر قېتىم يۈكلەنگەندىن كېيىن يوقاپ كەتمەيدۇ. خالىغان كىتابنى JSON ياكى رەتلىك PDF قىلىپ چىقىرىپ ساقلىيالايسىز.
+        </p>
+        <div class="book-list" id="manageBooksList"></div>
+      </div>
+    </div>
+
+    <!-- Modal 3: AI Prompt & JSON Generator -->
+    <div class="modal-backdrop" id="promptModal" role="dialog" aria-modal="true" aria-labelledby="promptModalTitle">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3 class="modal-title" id="promptModalTitle">ئىئاي ئۈچۈن پىرۇمپىت ۋە JSON تەييارلاش</h3>
+          <button type="button" class="icon-close" data-close-modal="promptModal" aria-label="تاقاش">×</button>
+        </div>
+        <p class="uyghur-paragraph" id="promptModalDesc" style="font-size:12.5px;color:var(--text-secondary);">
+          بۇ پىرۇمپىت AI غا ساپ JSON قايتۇرۇشنى بۇيرۇيدۇ. كۆچۈرۈپ AI غا بېرىڭ، ئاندىن AI چىقىرىپ بەرگەن JSON نى تۆۋەنگە چاپلاپ بىۋاسىتە ساقلىيالايسىز.
+        </p>
+
+        <div class="pdf-controls-row">
+          <div class="lang-toggle-grid" style="flex:1;">
+            <button type="button" class="lang-pill-btn active" id="promptLangUgBtn">ئۇيغۇرچە</button>
+            <button type="button" class="lang-pill-btn" id="promptLangArBtn">العربية</button>
+          </div>
+          <select id="promptCountSelect" class="book-select" style="width:auto;padding-block:5px;" aria-label="سۇئال سانى">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30" selected>30</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="field-label" id="promptTopicLabel" for="promptTopicInput">كىتاب ياكى دەرسلىك نامى:</label>
+          <input type="text" id="promptTopicInput" class="text-input" placeholder="مەسىلەن: ئىسلام تارىخى 1-قىسىم" />
+        </div>
+
+        <div>
+          <label class="field-label" id="promptSourceLabel" for="promptSourceTextArea">مەنبە تېكىست قوشۇش (ئىختىيارىي — پىرۇمپىت ئىچىگە كىرىدۇ):</label>
+          <textarea id="promptSourceTextArea" class="json-textarea" style="min-height:68px;" placeholder="ئەگەر تېكىستنى پىرۇمپىت بىلەن بىللە كۆچۈرمەكچى بولسىڭىز بۇ يەرگە چاپلاڭ..."></textarea>
+        </div>
+
+        <textarea id="promptPreviewArea" class="json-textarea" style="min-height:110px;font-family:monospace;font-size:11.5px;" readonly></textarea>
+
+        <button type="button" class="btn-primary-cta" id="copyPromptAgainBtn">پىرۇمپىتنى كۆچۈرۈش</button>
+
+        <div class="prompt-action-row">
+          <button type="button" class="btn-glass" id="downloadSampleJsonBtn" style="font-size:12px;">JSON قېلىپ چۈشۈرۈش</button>
+          <button type="button" class="btn-glass" id="downloadActiveBookJsonBtn" style="font-size:12px;">نۆۋەتتىكى JSON چۈشۈرۈش</button>
+        </div>
+
+        <div class="prompt-divider">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <label class="field-label" id="promptJsonPasteLabel" for="promptJsonPasteArea" style="margin-bottom:0;">AI چىقىرىپ بەرگەن JSON نى چاپلاپ ساقلاڭ:</label>
+            <label class="btn-glass" for="promptJsonFileInput" style="padding:4px 10px;font-size:11px;cursor:pointer;">
+              <span id="promptJsonUploadLabel">.json يۈكلەش</span>
+              <input type="file" id="promptJsonFileInput" class="file-upload-input" accept=".json,application/json,text/plain" />
+            </label>
+          </div>
+          <textarea id="promptJsonPasteArea" dir="ltr" class="json-textarea" style="min-height:84px;font-family:monospace;font-size:11.5px;" placeholder='{"bookTitle":"...","language":"ug","items":[{"id":1,"question":"...","answer":"..."}]}'></textarea>
+          <button type="button" class="btn-glass" id="savePromptJsonBtn" style="width:100%;border-color:var(--success);color:var(--success);">بۇ JSON نى كىتاب قىلىپ ساقلاش</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 4: Settings Details -->
+    <div class="modal-backdrop" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+      <div class="modal-sheet">
+        <div class="modal-header">
+          <h3 class="modal-title" id="settingsModalTitle">تەڭشەك ۋە ئەسكەرتىش</h3>
+          <button type="button" class="icon-close" data-close-modal="settingsModal" aria-label="تاقاش">×</button>
+        </div>
+
+        <div class="book-item" style="flex-direction:column;align-items:stretch;gap:8px;">
+          <div class="book-item-info">
+            <div class="book-item-title" id="settingsLanguageTitle">تىل / اللغة</div>
+            <div class="book-item-meta" id="settingsLanguageDesc">ئۇيغۇرچە ياكى ئەرەبچە ماتېرىيال ۋە كۆرۈنمە تىلىنى تاللاڭ</div>
+          </div>
+          <div class="lang-toggle-grid">
+            <button type="button" class="lang-pill-btn active" id="langUgBtn">ئۇيغۇرچە</button>
+            <button type="button" class="lang-pill-btn" id="langArBtn">العربية</button>
+          </div>
+        </div>
+
+        <div class="book-item" style="flex-direction:column;align-items:stretch;gap:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div class="book-item-info">
+              <div class="book-item-title" id="settingsBrightnessTitle">ئېكران يورۇقلۇقى</div>
+              <div class="book-item-meta" id="settingsBrightnessDesc">ئوقۇشقا قولايلىق يورۇقلۇقنى يۇقىرى-تۆۋەن تەڭشەڭ</div>
+            </div>
+            <span class="brightness-pct-badge" id="modalBrightnessValue">100%</span>
+          </div>
+          <div class="brightness-row">
+            <button type="button" class="brightness-step-btn" id="modalBrightnessDecBtn" aria-label="يورۇقلۇقنى پەسەيتىش">-</button>
+            <input type="range" min="50" max="130" step="5" value="100" class="brightness-range" id="modalBrightnessRange" aria-label="ئېكران يورۇقلۇقى" />
+            <button type="button" class="brightness-step-btn" id="modalBrightnessIncBtn" aria-label="يورۇقلۇقنى ئاشۇرۇش">+</button>
+            <button type="button" class="btn-glass" id="modalBrightnessResetBtn" style="padding:4px 10px;font-size:11px;">100%</button>
+          </div>
+        </div>
+        <div class="book-item">
+          <div class="book-item-info">
+            <div class="book-item-title" id="settingsReminderTitle">تور كۆرگۈچ ئېچىلغاندا ئەسكەرتىش</div>
+            <div class="book-item-meta" id="settingsReminderDesc">Chrome ئېچىلغاندا مۇھىم سۇئال چىقىرىدۇ</div>
+          </div>
+          <button type="button" class="btn-glass" id="modalReminderToggleBtn">ئالماشتۇرۇش</button>
+        </div>
+        <div class="book-item">
+          <div class="book-item-info">
+            <div class="book-item-title" id="settingsTestTitle">ئەسكەرتىشنى ھازىر سىناش</div>
+            <div class="book-item-meta" id="settingsTestDesc">ئۇقتۇرۇش كۆرۈنۈشىنى تەكشۈرۈش</div>
+          </div>
+          <button type="button" class="btn-glass" id="testNotificationBtn">سىناش</button>
+        </div>
+        <p class="uyghur-paragraph" id="settingsPrivacyFooter" style="font-size:12px;color:var(--text-secondary);">
+          بارلىق مەلۇماتلار پەقەت سىزنىڭ كومپيۇتېرىڭىزدا (chrome.storage.local) بىخەتەر ساقلىنىدۇ؛ ھېچقانداق سىرتقى مۇلازىمېتىرغا ئەۋەتىلمەيدۇ.
+        </p>
+      </div>
+    </div>
+
+    <!-- Printable A4 RTL PDF Export Surface -->
+    <div class="print-toolbar" id="printToolbar">
+      <div id="printToolbarTitle" style="font-weight:700;font-size:14px;">A4 PDF كۆرۈنۈشى ۋە ساقلاش</div>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+        <select id="printModeSelect" class="book-select" style="width:auto;padding-block:5px;" aria-label="PDF چىقىرىش شەكلى">
+          <option value="study" id="printOptStudy">تولۇق نۇسخا (سۇئال + جاۋاب)</option>
+          <option value="quiz" id="printOptQuiz">سىناق قەغىزى (جاۋاب ئاچقۇچى بىلەن)</option>
+          <option value="unmastered" id="printOptUnmastered">ئۆگەنمىگەنلىرىلا</option>
+        </select>
+        <button type="button" class="btn-glass" id="downloadPrintHtmlBtn">HTML ساقلاش</button>
+        <button type="button" class="btn-glass" id="exitPrintModeBtn">قايتىش</button>
+        <button type="button" class="btn-primary-cta" id="triggerPrintNowBtn" style="width:auto;min-height:38px;padding-inline:18px;">PDF ساقلاش / بېسىش</button>
+      </div>
+    </div>
+    <section class="print-sheet" id="printContainer" aria-label="PDF چىقىرىش بېتى"></section>
+
+    <div class="toast-bar" id="toastBar" role="status" aria-live="polite"></div>
+    <script src="popup.js"></script>
+  </body>
+</html>
